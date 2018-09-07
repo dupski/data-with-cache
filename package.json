@@ -1,5 +1,5 @@
 {
-  "name": "caching-strategies",
+  "name": "data-with-cache",
   "version": "1.0.0",
   "description": "Backend-agnostic caching library that provides caching strategies for application data",
   "main": "dist/index.js",

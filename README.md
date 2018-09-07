@@ -1,4 +1,4 @@
-# caching-strategies
+# data-with-cache
 
 I couldn't seem to find a good backend-agnostic library that implements standard
 caching strategies for JS applications, so I've made one :)
@@ -16,7 +16,8 @@ Implementing caching should be as simple as:
 
 ```ts
 function getCompany(companyId: number) {
-    const data = new CacheFirstStrategy<Company>({
+    const data = new DataWithCache<Company>({
+        strategy: 'cache_first',
         cache: appCache,
         objectType: 'company',
         objectId: String(companyId),
@@ -30,15 +31,7 @@ const company = await getCompany(123).getDate();
 ```
 
 ## Currently Included Strategies
-
-### API First
-
-  - Try the API first and wait until `apiTimeout`, or until an error occurs
-  - Return API data if successful, and add it to the cache
-  - If API throws an error or times out, then return the data from the cache (if present)
-  - If no matching data in the cache then throw an error
-
-This strategy is good for when displaying up-to-date information is critical,
+or when displaying up-to-date information is critical,
 but you want your app to keep working offline or with an unreliable / slow network
 
 ### Cache First
