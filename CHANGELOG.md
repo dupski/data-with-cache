@@ -13,3 +13,4 @@
 
 * Added `cache_first` strategy implementation
 * Added `cacheTimeout` for cache functions
+* Added `onRefreshing()` and `onRefreshed()` events.

@@ -1,5 +1,6 @@
 import { DataWithCache } from '../DataWithCache';
 import { ICacheBackend, ICachedValue } from '../types';
+import { sleep } from '../utils';
 
 const objectType = 'company';
 const objectId = '12';
@@ -30,6 +31,8 @@ describe('DataWithCache - cacheFirst() tests', () => {
     let dataWithCache: DataWithCache<any>;
     let result: any;
     let onError: jest.Mock<any>;
+    let onRefreshing: jest.Mock<any>;
+    let onRefreshed: jest.Mock<any>;
 
     describe('when cache contains a current match', () => {
 
@@ -75,13 +78,18 @@ describe('DataWithCache - cacheFirst() tests', () => {
             cache = new MockCacheBackend();
             cache.get.mockResolvedValue(expiredValue);
             getData = jest.fn().mockResolvedValue(currentData);
+            onRefreshing = jest.fn();
+            onRefreshed = jest.fn();
 
             dataWithCache = new DataWithCache({
                 strategy: 'cache_first',
                 cache, objectType, objectId,
-                getData, cacheExpires
+                getData, cacheExpires,
             });
+            dataWithCache.onRefreshing = onRefreshing;
+            dataWithCache.onRefreshed = onRefreshed;
             result = await dataWithCache.getData();
+            await sleep(100);
         });
 
         it('calls cache.get()', () => {
@@ -99,6 +107,10 @@ describe('DataWithCache - cacheFirst() tests', () => {
             expect(getData).toHaveBeenCalledTimes(1);
         });
 
+        it('calls onRefreshing()', () => {
+            expect(onRefreshing).toHaveBeenCalledTimes(1);
+        });
+
         it('calls cache.set() with the current data', () => {
             expect(cache.set).toHaveBeenCalledTimes(1);
             const args = cache.set.mock.calls[0];
@@ -108,6 +120,10 @@ describe('DataWithCache - cacheFirst() tests', () => {
                 value: currentData,
                 timestamp: now,
             });
+        });
+
+        it('calls onRefreshed()', () => {
+            expect(onRefreshed).toHaveBeenCalledTimes(1);
         });
 
     });

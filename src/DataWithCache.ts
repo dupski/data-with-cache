@@ -1,10 +1,10 @@
 import { ICacheBackend, ICachedValue } from './types';
-import { withTimeout } from './utils';
+import { sleep, withTimeout } from './utils';
 
 export type Strategy = 'api_first' | 'cache_first';
 export type ErrorLevel = 'error' | 'warning';
 
-export interface IDataWithCacheParams {
+export interface IDataWithCacheParams<T> {
     strategy: Strategy;
     cache: ICacheBackend;
     objectType: string;
@@ -13,13 +13,11 @@ export interface IDataWithCacheParams {
     cacheTimeout?: number;
     cacheExpires?: number;
     debug?: boolean;
-    getData: () => Promise<any>;
-    // onRefreshing?: () => void;
-    // onRefreshed?: () => any;
+    getData: () => Promise<T>;
     onError?: (error: Error, level: ErrorLevel) => void;
 }
 
-const requiredParams: Array<keyof IDataWithCacheParams> = [
+const requiredParams: Array<keyof IDataWithCacheParams<any>> = [
     'strategy', 'cache', 'objectType', 'objectId', 'getData',
 ];
 
@@ -27,10 +25,14 @@ const DEFAULT_API_TIMEOUT = 5000;
 const DEFAULT_CACHE_TIMEOUT = 1000;
 
 export class DataWithCache<T> {
+
+    onRefreshing?: () => void;
+    onRefreshed?: (data: T) => any;
+
     private loading = false;
 
     constructor(
-        public params: IDataWithCacheParams,
+        public params: IDataWithCacheParams<T>,
     ) {
         requiredParams.forEach((param) => {
             if (!this.params[param]) {
@@ -103,12 +105,23 @@ export class DataWithCache<T> {
             const now = Date.now();
             if (typeof p.cacheExpires != 'undefined'
                 && (now - cacheResult.timestamp) > p.cacheExpires) {
-                this.debug('cache_first: cached value has expired. Calling getData()..');
-                this.callGetData()
+
+                // Refresh cache in a seperate event
+                sleep(10)
+                    .then(() => {
+                        this.debug('cache_first: cached value has expired. Calling getData()..');
+                        if (this.onRefreshing) {
+                            this.onRefreshing();
+                        }
+                        return this.callGetData();
+                    })
                     .then((res) => {
                         if (res) {
                             this.debug('cache_first: getDate() returned a result. Updating cached value.');
                             this.setCache(res);
+                            if (this.onRefreshed) {
+                                this.onRefreshed(res);
+                            }
                         }
                     })
                     .catch((e) => {

@@ -38,13 +38,23 @@ ui.goButton.onclick = async () => {
 
     // Request data via DataWithCache
     const data = getSeminarAttendees(123);
+
+    // Set up listeners for data refreshes
+    data.onRefreshing = () => {
+        ui.setStatus('Loaded. Refreshing...');
+    };
+    data.onRefreshed = (result) => {
+        ui.setStatus('Loaded.');
+        ui.showResult(result);
+    };
+
     try {
         const result = await data.getData();
 
         // Success! Update UI
         ui.showLoader(false);
         ui.showResult(result);
-        ui.setStatus('Finished Loading.');
+        ui.setStatus('Loaded.');
     }
     catch (e) {
         // Failure. Log error to console

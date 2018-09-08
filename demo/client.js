@@ -186,12 +186,22 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                             const now = Date.now();
                             if (typeof p.cacheExpires != 'undefined'
                                 && (now - cacheResult.timestamp) > p.cacheExpires) {
-                                this.debug('cache_first: cached value has expired. Calling getData()..');
-                                this.callGetData()
+                                // Refresh cache in a seperate event
+                                utils_1.sleep(10)
+                                    .then(() => {
+                                    this.debug('cache_first: cached value has expired. Calling getData()..');
+                                    if (this.onRefreshing) {
+                                        this.onRefreshing();
+                                    }
+                                    return this.callGetData();
+                                })
                                     .then((res) => {
                                     if (res) {
                                         this.debug('cache_first: getDate() returned a result. Updating cached value.');
                                         this.setCache(res);
+                                        if (this.onRefreshed) {
+                                            this.onRefreshed(res);
+                                        }
                                     }
                                 })
                                     .catch((e) => {
@@ -441,12 +451,20 @@ System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], functi
                 yield utils_3.sleep(100);
                 // Request data via DataWithCache
                 const data = getSeminarAttendees(123);
+                // Set up listeners for data refreshes
+                data.onRefreshing = () => {
+                    ui.setStatus('Loaded. Refreshing...');
+                };
+                data.onRefreshed = (result) => {
+                    ui.setStatus('Loaded.');
+                    ui.showResult(result);
+                };
                 try {
                     const result = yield data.getData();
                     // Success! Update UI
                     ui.showLoader(false);
                     ui.showResult(result);
-                    ui.setStatus('Finished Loading.');
+                    ui.setStatus('Loaded.');
                 }
                 catch (e) {
                     // Failure. Log error to console
