@@ -5,14 +5,14 @@ caching strategies for JS applications, so I've made one :)
 
 ## Overview
 
-Implementing data caching in your JavaScript application can make it far more
+Implementing data caching in your JavaScript application can make it more
 responsive for users, and also more resilient against a poor network
-connection.
+connection and API problems.
 
 The goal of this library is allow you to implement caching for application data,
 without having to add lots of specific caching logic to your application.
 
-Implementing caching should be as simple as:
+Implementing caching is as simple as:
 
 ```ts
 function getCompany(companyId: number) {
@@ -62,6 +62,11 @@ See the [CHANGELOG](CHANGELOG.md)
 # Examples
 
 // TODO
+
+# TODO
+
+* More Documentation
+* IndexedDB ICacheBackend
 
 # Contributing
 

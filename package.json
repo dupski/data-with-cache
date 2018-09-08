@@ -1,7 +1,7 @@
 {
   "name": "data-with-cache",
   "version": "1.0.0",
-  "description": "Backend-agnostic caching library that provides caching strategies for application data",
+  "description": "Backend-agnostic JS caching library that simplifies caching of application data",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {},
@@ -17,7 +17,8 @@
     "build-demo": "tsc -m system -target ES6 -outFile demo/client.js src/demo/client.ts",
     "watch-demo": "tsc --watch -m system -target ES6 -outFile demo/client.js src/demo/client.ts",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "prepublish": "npm run build && npm run test"
   },
   "keywords": [
     "cache",
