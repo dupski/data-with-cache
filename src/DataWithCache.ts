@@ -58,7 +58,7 @@ export class DataWithCache<T> {
     private async apiFirst(): Promise<T> {
         const p = this.params;
         let apiResult: T | null = null;
-        this.debug('initiating getData() request.');
+        this.debug('api_first: making getData() request.');
         try {
             apiResult = await this.callGetData();
         }
@@ -66,9 +66,8 @@ export class DataWithCache<T> {
             this.logError(e, 'warning');
         }
         if (apiResult) {
-            this.debug('getData() succeeded. Adding to cache.');
+            this.debug('api_first: getData() succeeded. Adding data to cache and returning it.');
             this.setCache(apiResult);
-            this.debug('returning getData() result.');
             return apiResult;
         }
         else {
@@ -80,7 +79,7 @@ export class DataWithCache<T> {
                 this.logError(e, 'error');
             }
             if (cacheResult) {
-                this.debug('getData() failed. Value exists in cache. Returning it.');
+                this.debug('api_first: getData() failed. Value exists in cache. Returning it.');
                 return cacheResult.value;
             }
             else {
@@ -93,6 +92,7 @@ export class DataWithCache<T> {
     private async cacheFirst(): Promise<T> {
         const p = this.params;
         let cacheResult: ICachedValue<T> | null = null;
+        this.debug('cache_first: trying to get value from cache.');
         try {
             cacheResult = await this.getFromCache();
         }
@@ -103,18 +103,24 @@ export class DataWithCache<T> {
             const now = Date.now();
             if (typeof p.cacheExpires != 'undefined'
                 && (now - cacheResult.timestamp) > p.cacheExpires) {
+                this.debug('cache_first: cached value has expired. Calling getData()..');
                 this.callGetData()
                     .then((res) => {
-                        return this.setCache(res);
+                        if (res) {
+                            this.debug('cache_first: getDate() returned a result. Updating cached value.');
+                            this.setCache(res);
+                        }
                     })
                     .catch((e) => {
                         this.logError(e, 'warning');
                     });
             }
+            this.debug('cache_first: matched cached value. Returning it.');
             return cacheResult.value;
         }
         else {
             let apiResult: T | null = null;
+            this.debug('cache_first: did not match a cached value. Calling getData()...');
             try {
                 apiResult = await this.callGetData();
             }
@@ -122,6 +128,7 @@ export class DataWithCache<T> {
                 this.logError(e, 'error');
             }
             if (apiResult) {
+                this.debug('cache_first: getData() succeeded. Adding data to cache and returning it.');
                 this.setCache(apiResult);
                 return apiResult;
             }

@@ -141,7 +141,7 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                     return __awaiter(this, void 0, void 0, function* () {
                         const p = this.params;
                         let apiResult = null;
-                        this.debug('initiating getData() request.');
+                        this.debug('api_first: making getData() request.');
                         try {
                             apiResult = yield this.callGetData();
                         }
@@ -149,9 +149,8 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                             this.logError(e, 'warning');
                         }
                         if (apiResult) {
-                            this.debug('getData() succeeded. Adding to cache.');
+                            this.debug('api_first: getData() succeeded. Adding data to cache and returning it.');
                             this.setCache(apiResult);
-                            this.debug('returning getData() result.');
                             return apiResult;
                         }
                         else {
@@ -163,7 +162,7 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                                 this.logError(e, 'error');
                             }
                             if (cacheResult) {
-                                this.debug('getData() failed. Value exists in cache. Returning it.');
+                                this.debug('api_first: getData() failed. Value exists in cache. Returning it.');
                                 return cacheResult.value;
                             }
                             else {
@@ -176,6 +175,7 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                     return __awaiter(this, void 0, void 0, function* () {
                         const p = this.params;
                         let cacheResult = null;
+                        this.debug('cache_first: trying to get value from cache.');
                         try {
                             cacheResult = yield this.getFromCache();
                         }
@@ -186,18 +186,24 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                             const now = Date.now();
                             if (typeof p.cacheExpires != 'undefined'
                                 && (now - cacheResult.timestamp) > p.cacheExpires) {
+                                this.debug('cache_first: cached value has expired. Calling getData()..');
                                 this.callGetData()
                                     .then((res) => {
-                                    return this.setCache(res);
+                                    if (res) {
+                                        this.debug('cache_first: getDate() returned a result. Updating cached value.');
+                                        this.setCache(res);
+                                    }
                                 })
                                     .catch((e) => {
                                     this.logError(e, 'warning');
                                 });
                             }
+                            this.debug('cache_first: matched cached value. Returning it.');
                             return cacheResult.value;
                         }
                         else {
                             let apiResult = null;
+                            this.debug('cache_first: did not match a cached value. Calling getData()...');
                             try {
                                 apiResult = yield this.callGetData();
                             }
@@ -205,6 +211,7 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                                 this.logError(e, 'error');
                             }
                             if (apiResult) {
+                                this.debug('cache_first: getData() succeeded. Adding data to cache and returning it.');
                                 this.setCache(apiResult);
                                 return apiResult;
                             }
@@ -285,34 +292,39 @@ System.register("index", ["backends/index", "DataWithCache"], function (exports_
         }
     };
 });
-System.register("demo/api", [], function (exports_7, context_7) {
+System.register("demo/api", ["utils"], function (exports_7, context_7) {
     "use strict";
-    var params, currentOffset, DATA;
+    var utils_2, params, currentOffset, DATA;
     var __moduleName = context_7 && context_7.id;
     function getSeminarAttendees(seminarId) {
-        return new Promise((resolve, reject) => {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield utils_2.sleep(50);
             console.log('API: Request received.');
-            setTimeout(() => {
-                if (params.throwError) {
-                    console.log('API: Error reponse.');
-                    reject(new Error('API: Had an error :( ...'));
+            yield utils_2.sleep(params.apiResponseTime);
+            if (params.throwError) {
+                console.log('API: Error reponse.');
+                throw new Error('API: Had an error :( ...');
+            }
+            else {
+                const data = DATA.slice(currentOffset, currentOffset + 6);
+                if (currentOffset >= 94) {
+                    currentOffset = 0;
                 }
                 else {
-                    console.log('API: Response sent.');
-                    resolve(DATA.slice(currentOffset, currentOffset + 6));
-                    if (currentOffset >= 94) {
-                        currentOffset = 0;
-                    }
-                    else {
-                        currentOffset++;
-                    }
+                    currentOffset++;
                 }
-            }, params.apiResponseTime);
+                console.log('API: Response sent.');
+                return data;
+            }
         });
     }
     exports_7("getSeminarAttendees", getSeminarAttendees);
     return {
-        setters: [],
+        setters: [
+            function (utils_2_1) {
+                utils_2 = utils_2_1;
+            }
+        ],
         execute: function () {
             exports_7("params", params = {
                 apiResponseTime: 1000,
@@ -384,7 +396,7 @@ System.register("demo/ui", [], function (exports_8, context_8) {
 });
 System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], function (exports_9, context_9) {
     "use strict";
-    var index_2, utils_2, api, ui_1, ui, cache;
+    var index_2, utils_3, api, ui_1, ui, cache;
     var __moduleName = context_9 && context_9.id;
     function getSeminarAttendees(seminarId) {
         return new index_2.DataWithCache({
@@ -403,8 +415,8 @@ System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], functi
             function (index_2_1) {
                 index_2 = index_2_1;
             },
-            function (utils_2_1) {
-                utils_2 = utils_2_1;
+            function (utils_3_1) {
+                utils_3 = utils_3_1;
             },
             function (api_1) {
                 api = api_1;
@@ -426,7 +438,7 @@ System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], functi
                 ui.showResult(null);
                 ui.setStatus('Loading...');
                 // Artificial delay so the user can see something has happened in cache_first mode
-                yield utils_2.sleep(100);
+                yield utils_3.sleep(100);
                 // Request data via DataWithCache
                 const data = getSeminarAttendees(123);
                 try {

@@ -1,3 +1,4 @@
+import { sleep } from '../utils';
 
 export const params = {
     apiResponseTime: 1000,
@@ -10,26 +11,25 @@ export interface IAttendee {
     city: string;
 }
 
-export function getSeminarAttendees(seminarId: number) {
-    return new Promise<any>((resolve, reject) => {
-        console.log('API: Request received.');
-        setTimeout(() => {
-            if (params.throwError) {
-                console.log('API: Error reponse.');
-                reject(new Error('API: Had an error :( ...'));
-            }
-            else {
-                console.log('API: Response sent.');
-                resolve(DATA.slice(currentOffset, currentOffset + 6));
-                if (currentOffset >= 94) {
-                    currentOffset = 0;
-                }
-                else {
-                    currentOffset++;
-                }
-            }
-        }, params.apiResponseTime);
-    });
+export async function getSeminarAttendees(seminarId: number) {
+    await sleep(50);
+    console.log('API: Request received.');
+    await sleep(params.apiResponseTime);
+    if (params.throwError) {
+        console.log('API: Error reponse.');
+        throw new Error('API: Had an error :( ...');
+    }
+    else {
+        const data = DATA.slice(currentOffset, currentOffset + 6);
+        if (currentOffset >= 94) {
+            currentOffset = 0;
+        }
+        else {
+            currentOffset++;
+        }
+        console.log('API: Response sent.');
+        return data;
+    }
 }
 
 let currentOffset = 0;
