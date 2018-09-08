@@ -49,7 +49,7 @@
         <h4>API Settings</h4>
 
         <div class="form-group row">
-          <label for="apiTimeout" class="col-sm-6 col-form-label">Response Time (ms)</label>
+          <label for="apiResponseTime" class="col-sm-6 col-form-label">Response Time (ms)</label>
           <div class="col-sm-6">
             <input type="text" class="form-control" id="apiResponseTime" value="1000">
           </div>
@@ -58,12 +58,12 @@
           <div class="col-sm-6">Throw an Error?</div>
           <div class="col-sm-6">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="gridCheck1">
+              <input class="form-check-input" type="checkbox" id="apiError">
             </div>
           </div>
         </div>
 
-        <button type="button" class="btn btn-primary">GO!</button>
+        <button id="goButton" type="button" class="btn btn-primary">GO!</button>
 
       </div>
       <div class="col-sm">
@@ -107,7 +107,7 @@
   <script src="example/system.js"></script>
   <script src="example/client.js"></script>
   <script>
-    System.import('client');
+    System.import('example/client');
   </script>
 </body>
 

@@ -1,32 +1,147 @@
-System.register("api", [], function (exports_1, context_1) {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+System.register("types", [], function (exports_1, context_1) {
     "use strict";
-    var API_PARAMS, currentOffset, DATA;
     var __moduleName = context_1 && context_1.id;
-    function fetchAttendeesList(seminarId) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (API_PARAMS.throwError) {
-                    reject(new Error('Got an error from the API :( ...'));
-                }
-                else {
-                    resolve(DATA.slice(currentOffset, currentOffset + 10));
-                    if (currentOffset >= 90) {
-                        currentOffset = 0;
-                    }
-                    else {
-                        currentOffset++;
-                    }
-                }
-            }, API_PARAMS.apiResponseTime);
-        });
-    }
-    exports_1("fetchAttendeesList", fetchAttendeesList);
     return {
         setters: [],
         execute: function () {
-            exports_1("API_PARAMS", API_PARAMS = {
+        }
+    };
+});
+System.register("backends/InMemoryCache", [], function (exports_2, context_2) {
+    "use strict";
+    var InMemoryCache;
+    var __moduleName = context_2 && context_2.id;
+    return {
+        setters: [],
+        execute: function () {
+            InMemoryCache = class InMemoryCache {
+                constructor() {
+                    this.__cache = {};
+                }
+                get(objectType, objectId) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (objectType in this.__cache
+                            && objectId in this.__cache[objectType]) {
+                            return this.__cache[objectType][objectId];
+                        }
+                        return null;
+                    });
+                }
+                set(objectType, objectId, data) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (!(objectType in this.__cache)) {
+                            this.__cache[objectType] = {};
+                        }
+                        this.__cache[objectType][objectId] = data;
+                    });
+                }
+            };
+            exports_2("InMemoryCache", InMemoryCache);
+        }
+    };
+});
+System.register("backends/index", ["backends/InMemoryCache"], function (exports_3, context_3) {
+    "use strict";
+    var __moduleName = context_3 && context_3.id;
+    function exportStar_1(m) {
+        var exports = {};
+        for (var n in m) {
+            if (n !== "default") exports[n] = m[n];
+        }
+        exports_3(exports);
+    }
+    return {
+        setters: [
+            function (InMemoryCache_1_1) {
+                exportStar_1(InMemoryCache_1_1);
+            }
+        ],
+        execute: function () {
+        }
+    };
+});
+System.register("DataWithCache", [], function (exports_4, context_4) {
+    "use strict";
+    var DataWithCache;
+    var __moduleName = context_4 && context_4.id;
+    return {
+        setters: [],
+        execute: function () {
+            DataWithCache = class DataWithCache {
+                constructor(params) {
+                    this.params = params;
+                }
+                getData() {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return this.params.getData();
+                    });
+                }
+            };
+            exports_4("DataWithCache", DataWithCache);
+        }
+    };
+});
+System.register("index", ["backends/index", "DataWithCache"], function (exports_5, context_5) {
+    "use strict";
+    var __moduleName = context_5 && context_5.id;
+    function exportStar_2(m) {
+        var exports = {};
+        for (var n in m) {
+            if (n !== "default") exports[n] = m[n];
+        }
+        exports_5(exports);
+    }
+    return {
+        setters: [
+            function (index_1_1) {
+                exportStar_2(index_1_1);
+            },
+            function (DataWithCache_1_1) {
+                exportStar_2(DataWithCache_1_1);
+            }
+        ],
+        execute: function () {
+        }
+    };
+});
+System.register("example/api", [], function (exports_6, context_6) {
+    "use strict";
+    var API_PARAMS, API, currentOffset, DATA;
+    var __moduleName = context_6 && context_6.id;
+    return {
+        setters: [],
+        execute: function () {
+            exports_6("API_PARAMS", API_PARAMS = {
                 apiResponseTime: 1000,
                 throwError: false,
+            });
+            exports_6("API", API = {
+                getSeminarAttendees(seminarId) {
+                    return new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            if (API_PARAMS.throwError) {
+                                reject(new Error('Got an error from the API :( ...'));
+                            }
+                            else {
+                                resolve(DATA.slice(currentOffset, currentOffset + 10));
+                                if (currentOffset >= 90) {
+                                    currentOffset = 0;
+                                }
+                                else {
+                                    currentOffset++;
+                                }
+                            }
+                        }, API_PARAMS.apiResponseTime);
+                    });
+                },
             });
             currentOffset = 0;
             // tslint:disable
@@ -45,23 +160,59 @@ System.register("api", [], function (exports_1, context_1) {
         }
     };
 });
-System.register("client", ["api"], function (exports_2, context_2) {
+System.register("example/ui", [], function (exports_7, context_7) {
     "use strict";
-    var api_1;
-    var __moduleName = context_2 && context_2.id;
+    var __moduleName = context_7 && context_7.id;
+    function getUIHandles() {
+        return {
+            strategy: document.getElementById('strategy'),
+            apiTimeout: document.getElementById('apiTimeout'),
+            cacheExpires: document.getElementById('cacheExpires'),
+            apiResponseTime: document.getElementById('apiResponseTime'),
+            apiError: document.getElementById('apiError'),
+            goButton: document.getElementById('goButton'),
+        };
+    }
+    exports_7("getUIHandles", getUIHandles);
+    return {
+        setters: [],
+        execute: function () {
+        }
+    };
+});
+System.register("example/client", ["index", "example/api", "example/ui"], function (exports_8, context_8) {
+    "use strict";
+    var index_2, api_1, ui_1, ui, cache;
+    var __moduleName = context_8 && context_8.id;
+    function getSeminarAttendees(seminarId) {
+        return new index_2.DataWithCache({
+            strategy: ui.strategy.value,
+            cache,
+            objectType: 'seminarAttendees',
+            objectId: String(seminarId),
+            getData: () => api_1.API.getSeminarAttendees(seminarId),
+        });
+    }
     return {
         setters: [
+            function (index_2_1) {
+                index_2 = index_2_1;
+            },
             function (api_1_1) {
                 api_1 = api_1_1;
+            },
+            function (ui_1_1) {
+                ui_1 = ui_1_1;
             }
         ],
         execute: function () {
-            api_1.fetchAttendeesList(100)
-                .then((attendees) => {
-                console.log('attendees', attendees);
-            })
-                .catch((e) => {
-                console.error(e);
+            ui = ui_1.getUIHandles();
+            cache = new index_2.InMemoryCache();
+            ui.goButton.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                console.log('Requesting data using strategy:', ui.strategy.value);
+                const data = getSeminarAttendees(123);
+                const result = yield data.getData();
+                console.log('result', result);
             });
         }
     };

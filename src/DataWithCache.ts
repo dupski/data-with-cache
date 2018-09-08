@@ -1,6 +1,9 @@
 import { ICacheBackend } from './types';
 
+export type Strategy = 'api_first' | 'cache_first';
+
 export interface IDataWithCacheParams {
+    strategy: Strategy;
     cache: ICacheBackend;
     objectType: string;
     objectId: string;
@@ -10,14 +13,12 @@ export interface IDataWithCacheParams {
     cacheExpires?: number;
 }
 
-export class APIFirstStrategy {
+export class DataWithCache {
     constructor(
         public params: IDataWithCacheParams,
-    ) {
-        console.log('constructed!');
-    }
+    ) { }
 
-    getData() {
-        return;
+    async getData() {
+        return this.params.getData();
     }
 }

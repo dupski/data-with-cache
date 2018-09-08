@@ -4,33 +4,35 @@ export const API_PARAMS = {
     throwError: false,
 };
 
-export interface ICustomerOrder {
+export interface IAttendee {
     attendeeId: number;
     name: string;
     city: string;
 }
 
-export function fetchAttendeesList(seminarId: number) {
-    return new Promise<any>((resolve, reject) => {
-        setTimeout(() => {
-            if (API_PARAMS.throwError) {
-                reject(new Error('Got an error from the API :( ...'));
-            } else {
-                resolve(DATA.slice(currentOffset, currentOffset + 10));
-                if (currentOffset >= 90) {
-                    currentOffset = 0;
+export const API = {
+    getSeminarAttendees(seminarId: number) {
+        return new Promise<any>((resolve, reject) => {
+            setTimeout(() => {
+                if (API_PARAMS.throwError) {
+                    reject(new Error('Got an error from the API :( ...'));
                 } else {
-                    currentOffset++;
+                    resolve(DATA.slice(currentOffset, currentOffset + 10));
+                    if (currentOffset >= 90) {
+                        currentOffset = 0;
+                    } else {
+                        currentOffset++;
+                    }
                 }
-            }
-        }, API_PARAMS.apiResponseTime);
-    });
-}
+            }, API_PARAMS.apiResponseTime);
+        });
+    },
+};
 
 let currentOffset = 0;
 
 // tslint:disable
-const DATA: ICustomerOrder[] = [
+const DATA: IAttendee[] = [
     { attendeeId: 1, name: 'Jack Maddox', city: 'Keswick' }, { attendeeId: 2, name: 'Carl Bolton', city: 'Montague' }, { attendeeId: 3, name: 'Chastity Petty', city: 'Holywell' }, { attendeeId: 4, name: 'Zachary Noel', city: 'Fiumara' }, { attendeeId: 5, name: 'Kay Luna', city: 'Glendon' }, { attendeeId: 6, name: 'Hasad Marshall', city: 'Kollam' }, { attendeeId: 7, name: 'Buffy Young', city: 'Chillán' }, { attendeeId: 8, name: 'Eliana Stephenson', city: 'Schriek' }, { attendeeId: 9, name: 'Brenna Miller', city: 'Bihar Sharif' }, { attendeeId: 10, name: 'Adara Curtis', city: 'Roccanova' },
     { attendeeId: 11, name: 'Felix Powers', city: 'Cheltenham' }, { attendeeId: 12, name: 'Brittany Jones', city: 'Concepción' }, { attendeeId: 13, name: 'Oliver Christian', city: 'GrivegnŽe' }, { attendeeId: 14, name: 'James Pate', city: 'Kelowna' }, { attendeeId: 15, name: 'Hamish Horton', city: 'Milnathort' }, { attendeeId: 16, name: 'Cain Cantu', city: 'Hantes-WihŽries' }, { attendeeId: 17, name: 'Brody Mercado', city: 'Oswestry' }, { attendeeId: 18, name: 'Amy Henry', city: 'Bowling Green' }, { attendeeId: 19, name: 'Barrett Osborn', city: 'Pucón' }, { attendeeId: 20, name: 'Drew Bright', city: 'Hengelo' },
     { attendeeId: 21, name: 'Giacomo Mann', city: 'Montpellier' }, { attendeeId: 22, name: 'Jane Stewart', city: 'Täby' }, { attendeeId: 23, name: 'Jerry Walton', city: 'Falun' }, { attendeeId: 24, name: 'Darius Crawford', city: 'Piegaro' }, { attendeeId: 25, name: 'Robin Hodge', city: 'Iquique' }, { attendeeId: 26, name: 'Chester Battle', city: 'Los Andes' }, { attendeeId: 27, name: 'Evelyn Vinson', city: 'Kallo' }, { attendeeId: 28, name: 'Tallulah Bennett', city: 'Manoppello' }, { attendeeId: 29, name: 'Ariel Meyers', city: 'Almelo' }, { attendeeId: 30, name: 'Adria Todd', city: 'Goulburn' },
