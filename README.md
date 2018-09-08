@@ -42,7 +42,7 @@ const company = await getCompany(123).getDate();
 This strategy is good for when displaying up-to-date information is critical,
 but you want your app to keep working offline or with an unreliable / slow network
 
-### Cache First
+### Cache First - COMING SOON!!
   - Return the data from the cache (if present)
   - If there is no matching data in the cache, try the API
   - If the API call is successful, return the data and add it to the cache
@@ -54,6 +54,10 @@ you are OK with your users occasionally seeing slightly out-of-date information.
 
 With this strategy, you can still update your UI as soon as the updated information is
 received from your API, via the `onRefreshed()` event handler.
+
+# Recent Changes
+
+See the [CHANGELOG](CHANGELOG.md)
 
 # Examples
 
