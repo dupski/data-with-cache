@@ -94,7 +94,7 @@ export class DataWithCache<T> {
         const p = this.params;
         let cacheResult: ICachedValue<T> | null = null;
         try {
-            cacheResult = await p.cache.get<T>(p.objectType, p.objectId);
+            cacheResult = await this.getFromCache();
         }
         catch (e) {
             this.logError(e, 'warning');
