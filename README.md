@@ -31,11 +31,18 @@ const company = await getCompany(123).getDate();
 ```
 
 ## Currently Included Strategies
-or when displaying up-to-date information is critical,
+
+### API First
+
+  - Try the API first and wait until `apiTimeout`, or until an error occurs
+  - Return API data if successful, and add it to the cache
+  - If API throws an error or times out, then return the data from the cache (if present)
+  - If no matching data in the cache then throw an error
+
+This strategy is good for when displaying up-to-date information is critical,
 but you want your app to keep working offline or with an unreliable / slow network
 
 ### Cache First
-
   - Return the data from the cache (if present)
   - If there is no matching data in the cache, try the API
   - If the API call is successful, return the data and add it to the cache
@@ -51,6 +58,10 @@ received from your API, via the `onRefreshed()` event handler.
 # Examples
 
 // TODO
+
+# Contributing
+
+PRs welcome!
 
 # License
 
