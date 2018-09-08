@@ -1,0 +1,108 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>DataWithCache Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="col-md" style="max-width: 768px; margin: 30px auto;">
+    <h2>DataWithCache Demo</h2>
+
+    <p>
+      Use the controls below to experiment with DataWithCache options.
+      This page uses a mock API function that returns slightly different data
+      on each request.
+    </p>
+
+    <div class="row">
+      <div class="col-sm">
+        <h4>UI Tester</h4>
+
+        <div class="form-group row">
+          <label for="strategy" class="col-sm-6 col-form-label">Strategy</label>
+          <div class="col-sm-6">
+            <select class="custom-select" id="strategy">
+              <option value="api_first">api_first</option>
+              <option value="cache_first">cache_first</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="apiTimeout" class="col-sm-6 col-form-label">API Timeout (ms)</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="apiTimeout" value="2000">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="cacheExpires" class="col-sm-6 col-form-label">Cache Expires (ms)</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="cacheExpires" value="10000">
+          </div>
+        </div>
+
+        <h4>API Settings</h4>
+
+        <div class="form-group row">
+          <label for="apiTimeout" class="col-sm-6 col-form-label">Response Time (ms)</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" id="apiResponseTime" value="1000">
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-6">Throw an Error?</div>
+          <div class="col-sm-6">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="gridCheck1">
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary">GO!</button>
+
+      </div>
+      <div class="col-sm">
+
+        <h4>App UI</h4>
+
+        <div>
+          Status: &nbsp; <b>Not Loaded</b>
+        </div>
+
+        <div id="loader" style="margin-top: 75px; text-align: center;">
+          <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
+          <svg width="48" height="48" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a">
+                <stop stop-color="#000" stop-opacity="0" offset="0%" />
+                <stop stop-color="#000" stop-opacity=".631" offset="63.146%" />
+                <stop stop-color="#000" offset="100%" />
+              </linearGradient>
+            </defs>
+            <g fill="none" fill-rule="evenodd">
+              <g transform="translate(1 1)">
+                <path d="M36 18c0-9.94-8.06-18-18-18" id="Oval-2" stroke="url(#a)" stroke-width="2">
+                  <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s"
+                    repeatCount="indefinite" />
+                </path>
+                <circle fill="#fff" cx="36" cy="18" r="1">
+                  <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s"
+                    repeatCount="indefinite" />
+                </circle>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</body>
+
+</html>
