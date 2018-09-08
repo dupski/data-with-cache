@@ -11,8 +11,8 @@
   },
   "scripts": {
     "build": "rm -rf ./dist && tslint -p . && tsc",
-    "build-example": "tsc -m system -target ES6 -outFile example/client.js src/example/client.ts",
-    "build-watch-example": "tsc --watch -m system -target ES6 -outFile example/client.js src/example/client.ts",
+    "build-demo": "tsc -m system -target ES6 -outFile demo/client.js src/demo/client.ts",
+    "watch-demo": "tsc --watch -m system -target ES6 -outFile demo/client.js src/demo/client.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

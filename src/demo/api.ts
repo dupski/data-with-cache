@@ -1,5 +1,5 @@
 
-export const API_PARAMS = {
+export const params = {
     apiResponseTime: 1000,
     throwError: false,
 };
@@ -10,24 +10,22 @@ export interface IAttendee {
     city: string;
 }
 
-export const API = {
-    getSeminarAttendees(seminarId: number) {
-        return new Promise<any>((resolve, reject) => {
-            setTimeout(() => {
-                if (API_PARAMS.throwError) {
-                    reject(new Error('Got an error from the API :( ...'));
+export function getSeminarAttendees(seminarId: number) {
+    return new Promise<any>((resolve, reject) => {
+        setTimeout(() => {
+            if (params.throwError) {
+                reject(new Error('Got an error from the API :( ...'));
+            } else {
+                resolve(DATA.slice(currentOffset, currentOffset + 6));
+                if (currentOffset >= 94) {
+                    currentOffset = 0;
                 } else {
-                    resolve(DATA.slice(currentOffset, currentOffset + 10));
-                    if (currentOffset >= 90) {
-                        currentOffset = 0;
-                    } else {
-                        currentOffset++;
-                    }
+                    currentOffset++;
                 }
-            }, API_PARAMS.apiResponseTime);
-        });
-    },
-};
+            }
+        }, params.apiResponseTime);
+    });
+}
 
 let currentOffset = 0;
 

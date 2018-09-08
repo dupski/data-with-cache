@@ -36,13 +36,13 @@
         <div class="form-group row">
           <label for="apiTimeout" class="col-sm-6 col-form-label">API Timeout (ms)</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" id="apiTimeout" value="2000">
+            <input type="number" class="form-control" id="apiTimeout" value="2000">
           </div>
         </div>
         <div class="form-group row">
           <label for="cacheExpires" class="col-sm-6 col-form-label">Cache Expires (ms)</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" id="cacheExpires" value="10000">
+            <input type="number" class="form-control" id="cacheExpires" value="10000">
           </div>
         </div>
 
@@ -51,7 +51,7 @@
         <div class="form-group row">
           <label for="apiResponseTime" class="col-sm-6 col-form-label">Response Time (ms)</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" id="apiResponseTime" value="1000">
+            <input type="number" class="form-control" id="apiResponseTime" value="1000">
           </div>
         </div>
         <div class="form-group row">
@@ -70,11 +70,33 @@
 
         <h4>App UI</h4>
 
-        <div>
-          Status: &nbsp; <b>Not Loaded</b>
-        </div>
+        <p>
+          Status: &nbsp; <b id="status">Not Loaded</b>
+        </p>
 
-        <div id="loader" style="margin-top: 75px; text-align: center;">
+        <table id="dataTable" class="table table-bordered table-striped" style="display: none;">
+          <thead>
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Attendee Name</th>
+              <th scope="col">City</th>
+            </tr>
+          </thead>
+          <tbody id="dataBody">
+            <tr>
+              <td>1</td>
+              <td>Bob Briggs</td>
+              <td>London</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Sally Simpson</td>
+              <td>Springfield</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div id="loader" style="margin-top: 75px; text-align: center; display: none;">
           <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
           <svg width="48" height="48" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -104,10 +126,10 @@
     </div>
   </div>
 
-  <script src="example/system.js"></script>
-  <script src="example/client.js"></script>
+  <script src="demo/system.js"></script>
+  <script src="demo/client.js"></script>
   <script>
-    System.import('example/client');
+    System.import('demo/client');
   </script>
 </body>
 
