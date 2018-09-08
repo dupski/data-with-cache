@@ -8,7 +8,7 @@ const ui = getUIHandles();
 const cache = new InMemoryCache();
 
 function getSeminarAttendees(seminarId: number) {
-    return new DataWithCache({
+    return new DataWithCache<api.IAttendee[]>({
         strategy: ui.strategy.value as Strategy,
         cache,
         objectType: 'seminarAttendees',
@@ -31,7 +31,8 @@ ui.goButton.onclick = async () => {
         ui.showLoader(false);
         ui.showResult(result);
         ui.setStatus('Finished Loading.');
-    } catch (e) {
+    }
+    catch (e) {
         console.error(e);
         ui.showLoader(false);
         ui.setStatus('Error Returned. See console.');

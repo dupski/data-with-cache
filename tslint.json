@@ -13,6 +13,8 @@
       "jsx-double"
     ],
     "object-literal-sort-keys": false,
+    "one-line": false,
+    "triple-equals": false,
     "variable-name": false
   },
   "rulesDirectory": []

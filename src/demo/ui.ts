@@ -22,7 +22,8 @@ export function getUIHandles() {
         showResult(result: IAttendee[] | null) {
             if (!result) {
                 this.dataTable.style.display = 'none';
-            } else {
+            }
+            else {
                 while (this.dataBody.firstChild) {
                     this.dataBody.removeChild(this.dataBody.firstChild);
                 }
