@@ -8,10 +8,6 @@ indent_style = space
 indent_size = 2
 end_of_line = lf
 
-[package.json]
-indent_style = space
-indent_size = 2
-
-[package-lock.json]
+[*.json]
 indent_style = space
 indent_size = 2
