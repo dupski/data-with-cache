@@ -43,7 +43,7 @@ const company = await getCompany(123).getData();
 This strategy is good for when displaying up-to-date information is critical,
 but you want your app to keep working offline or with an unreliable / slow network
 
-### Cache First - COMING SOON!
+### Cache First - (stale-while-revalidate)
 
   - Return the data from the cache first (if present)
   - If there is no matching data in the cache, try the API

@@ -24,6 +24,7 @@ const requiredParams: Array<keyof IDataWithCacheParams> = [
 ];
 
 const DEFAULT_API_TIMEOUT = 5000;
+const DEFAULT_CACHE_TIMEOUT = 1000;
 
 export class DataWithCache<T> {
     private loading = false;
@@ -47,6 +48,8 @@ export class DataWithCache<T> {
         switch (this.params.strategy) {
             case 'api_first':
                 return this.apiFirst();
+            case 'cache_first':
+                return this.cacheFirst();
             default:
                 throw new Error(`Unknown strategy "${this.params.strategy}".`);
         }
@@ -71,7 +74,7 @@ export class DataWithCache<T> {
         else {
             let cacheResult: ICachedValue<T> | null = null;
             try {
-                cacheResult = await p.cache.get<T>(p.objectType, p.objectId);
+                cacheResult = await this.getFromCache();
             }
             catch (e) {
                 this.logError(e, 'error');
@@ -87,10 +90,60 @@ export class DataWithCache<T> {
         }
     }
 
+    private async cacheFirst(): Promise<T> {
+        const p = this.params;
+        let cacheResult: ICachedValue<T> | null = null;
+        try {
+            cacheResult = await p.cache.get<T>(p.objectType, p.objectId);
+        }
+        catch (e) {
+            this.logError(e, 'warning');
+        }
+        if (cacheResult) {
+            const now = Date.now();
+            if (typeof p.cacheExpires != 'undefined'
+                && (now - cacheResult.timestamp) > p.cacheExpires) {
+                this.callGetData()
+                    .then((res) => {
+                        return this.setCache(res);
+                    })
+                    .catch((e) => {
+                        this.logError(e, 'warning');
+                    });
+            }
+            return cacheResult.value;
+        }
+        else {
+            let apiResult: T | null = null;
+            try {
+                apiResult = await this.callGetData();
+            }
+            catch (e) {
+                this.logError(e, 'error');
+            }
+            if (apiResult) {
+                this.setCache(apiResult);
+                return apiResult;
+            }
+            else {
+                throw new Error(
+                    `No cache match and getData() failed for object "${p.objectType}", id: "${p.objectId}"`);
+            }
+        }
+    }
+
     private async callGetData() {
         return withTimeout(
             this.params.apiTimeout || DEFAULT_API_TIMEOUT,
             this.params.getData(),
+        );
+    }
+
+    private async getFromCache() {
+        const p = this.params;
+        return withTimeout(
+            p.cacheTimeout || DEFAULT_CACHE_TIMEOUT,
+            p.cache.get<T>(p.objectType, p.objectId)
         );
     }
 
@@ -101,7 +154,10 @@ export class DataWithCache<T> {
                 value: data,
                 timestamp: Date.now(),
             };
-            await p.cache.set(p.objectType, p.objectId, cacheValue);
+            await withTimeout(
+                p.cacheTimeout || DEFAULT_CACHE_TIMEOUT,
+                p.cache.set(p.objectType, p.objectId, cacheValue)
+            );
         }
         catch (e) {
             this.logError(e, 'warning');
