@@ -346,7 +346,6 @@ System.register("demo/ui", [], function (exports_8, context_8) {
             apiResponseTime: document.getElementById('apiResponseTime'),
             apiError: document.getElementById('apiError'),
             goButton: document.getElementById('goButton'),
-            clearButton: document.getElementById('clearButton'),
             status: document.getElementById('status'),
             loader: document.getElementById('loader'),
             dataTable: document.getElementById('dataTable'),
@@ -383,9 +382,9 @@ System.register("demo/ui", [], function (exports_8, context_8) {
         }
     };
 });
-System.register("demo/client", ["index", "demo/api", "demo/ui"], function (exports_9, context_9) {
+System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], function (exports_9, context_9) {
     "use strict";
-    var index_2, api, ui_1, ui, cache;
+    var index_2, utils_2, api, ui_1, ui, cache;
     var __moduleName = context_9 && context_9.id;
     function getSeminarAttendees(seminarId) {
         return new index_2.DataWithCache({
@@ -404,6 +403,9 @@ System.register("demo/client", ["index", "demo/api", "demo/ui"], function (expor
             function (index_2_1) {
                 index_2 = index_2_1;
             },
+            function (utils_2_1) {
+                utils_2 = utils_2_1;
+            },
             function (api_1) {
                 api = api_1;
             },
@@ -414,11 +416,6 @@ System.register("demo/client", ["index", "demo/api", "demo/ui"], function (expor
         execute: function () {
             ui = ui_1.getUIHandles();
             cache = new index_2.InMemoryCache();
-            ui.clearButton.onclick = () => {
-                ui.showLoader(false);
-                ui.showResult(null);
-                ui.setStatus('Not Loaded');
-            };
             ui.goButton.onclick = () => __awaiter(this, void 0, void 0, function* () {
                 console.log('Requesting data using strategy:', ui.strategy.value);
                 // Configure API
@@ -428,6 +425,8 @@ System.register("demo/client", ["index", "demo/api", "demo/ui"], function (expor
                 ui.showLoader(true);
                 ui.showResult(null);
                 ui.setStatus('Loading...');
+                // Artificial delay so the user can see something has happened in cache_first mode
+                yield utils_2.sleep(100);
                 // Request data via DataWithCache
                 const data = getSeminarAttendees(123);
                 try {

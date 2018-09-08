@@ -8,7 +8,6 @@ export function getUIHandles() {
         apiResponseTime: document.getElementById('apiResponseTime') as HTMLInputElement,
         apiError: document.getElementById('apiError') as HTMLInputElement,
         goButton: document.getElementById('goButton') as HTMLButtonElement,
-        clearButton: document.getElementById('clearButton') as HTMLButtonElement,
         status: document.getElementById('status') as HTMLSpanElement,
         loader: document.getElementById('loader') as HTMLDivElement,
         dataTable: document.getElementById('dataTable') as HTMLTableElement,

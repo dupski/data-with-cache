@@ -1,5 +1,6 @@
 
 import { DataWithCache, InMemoryCache, Strategy } from '../index';
+import { sleep } from '../utils';
 import * as api from './api';
 import { getUIHandles } from './ui';
 
@@ -20,12 +21,6 @@ function getSeminarAttendees(seminarId: number) {
     });
 }
 
-ui.clearButton.onclick = () => {
-    ui.showLoader(false);
-    ui.showResult(null);
-    ui.setStatus('Not Loaded');
-};
-
 ui.goButton.onclick = async () => {
 
     console.log('Requesting data using strategy:', ui.strategy.value);
@@ -38,6 +33,8 @@ ui.goButton.onclick = async () => {
     ui.showLoader(true);
     ui.showResult(null);
     ui.setStatus('Loading...');
+    // Artificial delay so the user can see something has happened in cache_first mode
+    await sleep(100);
 
     // Request data via DataWithCache
     const data = getSeminarAttendees(123);
