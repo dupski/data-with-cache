@@ -1,18 +1,21 @@
-import { ICacheBackend } from "../types";
+import { ICacheBackend } from './types';
 
-export interface IAPIFirstParams {
+export interface IDataWithCacheParams {
     cache: ICacheBackend;
     objectType: string;
     objectId: string;
     getData: () => Promise<any>;
     apiTimeout?: number;
     cacheTimeout?: number;
+    cacheExpires?: number;
 }
 
 export class APIFirstStrategy {
     constructor(
-        public params: IAPIFirstParams,
-    ) { }
+        public params: IDataWithCacheParams,
+    ) {
+        console.log('constructed!');
+    }
 
     getData() {
         return;

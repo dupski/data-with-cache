@@ -5,7 +5,13 @@
     ],
     "jsRules": {},
     "rules": {
-        "member-access": false
+        "member-access": false,
+        "no-console": false,
+        "quotemark": [
+            true,
+            "single",
+            "jsx-double"
+        ]
     },
     "rulesDirectory": []
 }
