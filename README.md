@@ -1,6 +1,6 @@
 # data-with-cache
 
-I couldn't seem to find a good backend-agnostic library that implements standard
+I couldn't seem to find a backend-agnostic library that implements standard
 caching strategies for JS applications, so I've made one :)
 
 ## Overview
@@ -9,10 +9,11 @@ Implementing data caching in your JavaScript application can make it more
 responsive for users, and also more resilient against a poor network
 connection and API problems.
 
-The goal of this library is allow you to implement caching for application data,
-without having to add lots of specific caching logic to your application.
+The goal of this library is to provide a configurable wrapper for you API
+functions, to save you writing repetitive caching logic yourself.
 
-Implementing caching is as simple as:
+Example below, and check out the
+[demo page](http://russellbriggs.co/data-with-cache/demo/).
 
 ```ts
 function getCompany(companyId: number) {
@@ -27,7 +28,7 @@ function getCompany(companyId: number) {
     return data;
 }
 
-const company = await getCompany(123).getDate();
+const company = await getCompany(123).getData();
 ```
 
 ## Currently Included Strategies
@@ -42,8 +43,9 @@ const company = await getCompany(123).getDate();
 This strategy is good for when displaying up-to-date information is critical,
 but you want your app to keep working offline or with an unreliable / slow network
 
-### Cache First - COMING SOON!!
-  - Return the data from the cache (if present)
+### Cache First - (stale-while-revalidate)
+
+  - Return the data from the cache first (if present)
   - If there is no matching data in the cache, try the API
   - If the API call is successful, return the data and add it to the cache
   - If the cached data is older than `cacheExpires` ms, contact the API
