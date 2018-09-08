@@ -18,7 +18,7 @@
     "watch-demo": "tsc --watch -m system -target ES6 -outFile demo/client.js src/demo/client.ts",
     "test": "jest",
     "test-watch": "jest --watch",
-    "prepublish": "npm run build && npm run test"
+    "prepare": "npm run build && npm run test"
   },
   "keywords": [
     "cache",
