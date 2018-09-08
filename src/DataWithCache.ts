@@ -55,6 +55,7 @@ export class DataWithCache<T> {
     private async apiFirst(): Promise<T> {
         const p = this.params;
         let apiResult: T | null = null;
+        this.debug('initiating getData() request.');
         try {
             apiResult = await this.callGetData();
         }
@@ -62,7 +63,9 @@ export class DataWithCache<T> {
             this.logError(e, 'warning');
         }
         if (apiResult) {
+            this.debug('getData() succeeded. Adding to cache.');
             this.setCache(apiResult);
+            this.debug('returning getData() result.');
             return apiResult;
         }
         else {
@@ -75,6 +78,7 @@ export class DataWithCache<T> {
                 throw e;
             }
             if (cacheResult) {
+                this.debug('getData() failed. Value exists in cache. Returning it.');
                 return cacheResult.value;
             }
             else {
@@ -113,6 +117,14 @@ export class DataWithCache<T> {
             level == 'error'
                 ? console.error(error)
                 : console.warn(error);
+        }
+    }
+
+    private debug(message: string) {
+        if (this.params.debug) {
+            console.log('DataWithCache: ' + message
+                + ' (object "' + this.params.objectType
+                + '", id: "' + this.params.objectId + '")');
         }
     }
 }

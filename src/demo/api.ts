@@ -12,13 +12,14 @@ export interface IAttendee {
 
 export function getSeminarAttendees(seminarId: number) {
     return new Promise<any>((resolve, reject) => {
-        console.log('API: Making request...');
+        console.log('API: Request received.');
         setTimeout(() => {
             if (params.throwError) {
-                reject(new Error('API: Got an error :( ...'));
+                console.log('API: Error reponse.');
+                reject(new Error('API: Had an error :( ...'));
             }
             else {
-                console.log('API: Response received.');
+                console.log('API: Response sent.');
                 resolve(DATA.slice(currentOffset, currentOffset + 6));
                 if (currentOffset >= 94) {
                     currentOffset = 0;
