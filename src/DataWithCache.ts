@@ -1,4 +1,4 @@
-import { ICacheBackend } from './types';
+import { ICacheBackend, ICachedValue } from './types';
 import { withTimeout } from './utils';
 
 export type Strategy = 'api_first' | 'cache_first';
@@ -22,11 +22,6 @@ export interface IDataWithCacheParams {
 const requiredParams: Array<keyof IDataWithCacheParams> = [
     'strategy', 'cache', 'objectType', 'objectId', 'getData',
 ];
-
-interface ICachedData<T> {
-    value: T;
-    timestamp: number;
-}
 
 const DEFAULT_API_TIMEOUT = 5000;
 
@@ -59,7 +54,7 @@ export class DataWithCache<T> {
 
     private async apiFirst(): Promise<T> {
         const p = this.params;
-        let apiResult: any;
+        let apiResult: T | null = null;
         try {
             apiResult = await this.callGetData();
         }
@@ -71,16 +66,16 @@ export class DataWithCache<T> {
             return apiResult;
         }
         else {
-            let cacheResult: any;
+            let cacheResult: ICachedValue<T> | null;
             try {
-                cacheResult = await p.cache.get(p.objectType, p.objectId);
+                cacheResult = await p.cache.get<T>(p.objectType, p.objectId);
             }
             catch (e) {
                 this.logError(e, 'error');
                 throw e;
             }
             if (cacheResult) {
-                return cacheResult;
+                return cacheResult.value;
             }
             else {
                 throw new Error(
@@ -99,7 +94,7 @@ export class DataWithCache<T> {
     private async setCache(data: T) {
         try {
             const p = this.params;
-            const cacheValue: ICachedData<T> = {
+            const cacheValue: ICachedValue<T> = {
                 value: data,
                 timestamp: Date.now(),
             };
