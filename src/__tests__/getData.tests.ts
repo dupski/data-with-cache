@@ -25,4 +25,15 @@ describe('DataWithCache - getData() tests', () => {
             .toEqual(new Error('getData() has already been called on this object.'));
     });
 
+    it('throws an error if called with an invalid strategy', async () => {
+        const data = new DataWithCache({
+            strategy: 'use_google' as any,
+            cache, objectType, objectId,
+            getData,
+        });
+        await expect(data.getData())
+            .rejects
+            .toEqual(new Error('Unknown strategy "use_google".'));
+    });
+
 });
