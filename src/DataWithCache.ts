@@ -14,8 +14,8 @@ export interface IDataWithCacheParams {
     cacheExpires?: number;
     debug?: boolean;
     getData: () => Promise<any>;
-    onRefreshing?: () => void;
-    onRefreshed?: () => any;
+    // onRefreshing?: () => void;
+    // onRefreshed?: () => any;
     onError?: (error: Error, level: ErrorLevel) => void;
 }
 
@@ -46,6 +46,8 @@ export class DataWithCache<T> {
         this.loading = true;
         switch (this.params.strategy) {
             case 'api_first':
+                return this.apiFirst();
+            case 'cache_first':
                 return this.apiFirst();
             default:
                 throw new Error(`Unknown strategy "${this.params.strategy}".`);
@@ -102,7 +104,7 @@ export class DataWithCache<T> {
                 value: data,
                 timestamp: Date.now(),
             };
-            p.cache.set(p.objectType, p.objectId, cacheValue);
+            await p.cache.set(p.objectType, p.objectId, cacheValue);
         }
         catch (e) {
             this.logError(e, 'warning');

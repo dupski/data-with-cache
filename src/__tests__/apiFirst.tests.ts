@@ -159,6 +159,46 @@ describe('DataWithCache - apiFirst() tests', () => {
 
     });
 
+    describe('when getData() succeeds but cache.set() fails', () => {
+        const expectedError = new Error('could not set cache');
+
+        beforeAll(async () => {
+            jest.clearAllMocks();
+            cache = new MockCacheBackend();
+            cache.set.mockRejectedValue(expectedError);
+            getData = jest.fn().mockResolvedValue(data);
+            onError = jest.fn();
+
+            dataWithCache = new DataWithCache({
+                strategy: 'api_first',
+                cache, objectType, objectId,
+                getData, onError
+            });
+            result = await dataWithCache.getData();
+            await sleep(50);
+        });
+
+        it('calls getData()', () => {
+            expect(getData).toHaveBeenCalledTimes(1);
+        });
+
+        it('tries to cache the result', () => {
+            expect(cache.set).toHaveBeenCalledTimes(1);
+        });
+
+        it('logs the error', () => {
+            expect(onError).toHaveBeenCalledTimes(1);
+            expect(onError).toHaveBeenCalledWith(
+                expectedError, 'warning'
+            );
+        });
+
+        it('still returns the expected data', () => {
+            expect(result).toEqual(data);
+        });
+
+    });
+
     describe('when getData() fails, and the cache also fails', () => {
         const apiError = new Error('API returned a 500 :(');
         const cacheError = new Error('IndexedDB is not available :(');
