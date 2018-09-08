@@ -247,8 +247,10 @@ describe('DataWithCache - apiFirst() tests', () => {
             expect(onError).toHaveBeenCalledWith(cacheError, 'error');
         });
 
-        it('throws the cache error', () => {
-            expect(returnedError).toEqual(cacheError);
+        it('throws the standard error', () => {
+            expect(returnedError).toEqual(new Error(
+                `getData() failed and no cache match for object "${objectType}", id: "${objectId}"`
+            ));
         });
 
     });

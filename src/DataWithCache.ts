@@ -47,8 +47,6 @@ export class DataWithCache<T> {
         switch (this.params.strategy) {
             case 'api_first':
                 return this.apiFirst();
-            case 'cache_first':
-                return this.apiFirst();
             default:
                 throw new Error(`Unknown strategy "${this.params.strategy}".`);
         }
@@ -71,13 +69,12 @@ export class DataWithCache<T> {
             return apiResult;
         }
         else {
-            let cacheResult: ICachedValue<T> | null;
+            let cacheResult: ICachedValue<T> | null = null;
             try {
                 cacheResult = await p.cache.get<T>(p.objectType, p.objectId);
             }
             catch (e) {
                 this.logError(e, 'error');
-                throw e;
             }
             if (cacheResult) {
                 this.debug('getData() failed. Value exists in cache. Returning it.');
