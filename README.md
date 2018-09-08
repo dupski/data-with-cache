@@ -69,6 +69,7 @@ See the [CHANGELOG](CHANGELOG.md)
 
 * More Documentation
 * IndexedDB ICacheBackend
+* Make use of `navigator.onLine` (when in the browser)
 
 # Contributing
 

@@ -13,11 +13,18 @@ function getSeminarAttendees(seminarId: number) {
         cache,
         objectType: 'seminarAttendees',
         objectId: String(seminarId),
+        cacheExpires: Number(ui.cacheExpires.value),
         apiTimeout: Number(ui.apiTimeout.value),
         getData: () => api.getSeminarAttendees(seminarId),
         debug: true
     });
 }
+
+ui.clearButton.onclick = () => {
+    ui.showLoader(false);
+    ui.showResult(null);
+    ui.setStatus('Not Loaded');
+};
 
 ui.goButton.onclick = async () => {
 

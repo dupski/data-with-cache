@@ -96,7 +96,7 @@ System.register("utils", [], function (exports_4, context_4) {
 });
 System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
     "use strict";
-    var utils_1, requiredParams, DEFAULT_API_TIMEOUT, DataWithCache;
+    var utils_1, requiredParams, DEFAULT_API_TIMEOUT, DEFAULT_CACHE_TIMEOUT, DataWithCache;
     var __moduleName = context_5 && context_5.id;
     return {
         setters: [
@@ -109,6 +109,7 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                 'strategy', 'cache', 'objectType', 'objectId', 'getData',
             ];
             DEFAULT_API_TIMEOUT = 5000;
+            DEFAULT_CACHE_TIMEOUT = 1000;
             DataWithCache = class DataWithCache {
                 constructor(params) {
                     this.params = params;
@@ -129,6 +130,8 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                         switch (this.params.strategy) {
                             case 'api_first':
                                 return this.apiFirst();
+                            case 'cache_first':
+                                return this.cacheFirst();
                             default:
                                 throw new Error(`Unknown strategy "${this.params.strategy}".`);
                         }
@@ -152,13 +155,12 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                             return apiResult;
                         }
                         else {
-                            let cacheResult;
+                            let cacheResult = null;
                             try {
-                                cacheResult = yield p.cache.get(p.objectType, p.objectId);
+                                cacheResult = yield this.getFromCache();
                             }
                             catch (e) {
                                 this.logError(e, 'error');
-                                throw e;
                             }
                             if (cacheResult) {
                                 this.debug('getData() failed. Value exists in cache. Returning it.');
@@ -170,9 +172,57 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                         }
                     });
                 }
+                cacheFirst() {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const p = this.params;
+                        let cacheResult = null;
+                        try {
+                            cacheResult = yield this.getFromCache();
+                        }
+                        catch (e) {
+                            this.logError(e, 'warning');
+                        }
+                        if (cacheResult) {
+                            const now = Date.now();
+                            if (typeof p.cacheExpires != 'undefined'
+                                && (now - cacheResult.timestamp) > p.cacheExpires) {
+                                this.callGetData()
+                                    .then((res) => {
+                                    return this.setCache(res);
+                                })
+                                    .catch((e) => {
+                                    this.logError(e, 'warning');
+                                });
+                            }
+                            return cacheResult.value;
+                        }
+                        else {
+                            let apiResult = null;
+                            try {
+                                apiResult = yield this.callGetData();
+                            }
+                            catch (e) {
+                                this.logError(e, 'error');
+                            }
+                            if (apiResult) {
+                                this.setCache(apiResult);
+                                return apiResult;
+                            }
+                            else {
+                                throw new Error(`No cache match and getData() failed for object "${p.objectType}", id: "${p.objectId}"`);
+                            }
+                        }
+                    });
+                }
                 callGetData() {
                     return __awaiter(this, void 0, void 0, function* () {
                         return utils_1.withTimeout(this.params.apiTimeout || DEFAULT_API_TIMEOUT, this.params.getData());
+                    });
+                }
+                getFromCache() {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const p = this.params;
+                        return utils_1.withTimeout(p.cacheTimeout || DEFAULT_CACHE_TIMEOUT, p.cache.get(p.objectType, p.objectId));
                     });
                 }
                 setCache(data) {
@@ -183,7 +233,7 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                                 value: data,
                                 timestamp: Date.now(),
                             };
-                            p.cache.set(p.objectType, p.objectId, cacheValue);
+                            yield utils_1.withTimeout(p.cacheTimeout || DEFAULT_CACHE_TIMEOUT, p.cache.set(p.objectType, p.objectId, cacheValue));
                         }
                         catch (e) {
                             this.logError(e, 'warning');
@@ -296,6 +346,7 @@ System.register("demo/ui", [], function (exports_8, context_8) {
             apiResponseTime: document.getElementById('apiResponseTime'),
             apiError: document.getElementById('apiError'),
             goButton: document.getElementById('goButton'),
+            clearButton: document.getElementById('clearButton'),
             status: document.getElementById('status'),
             loader: document.getElementById('loader'),
             dataTable: document.getElementById('dataTable'),
@@ -342,6 +393,7 @@ System.register("demo/client", ["index", "demo/api", "demo/ui"], function (expor
             cache,
             objectType: 'seminarAttendees',
             objectId: String(seminarId),
+            cacheExpires: Number(ui.cacheExpires.value),
             apiTimeout: Number(ui.apiTimeout.value),
             getData: () => api.getSeminarAttendees(seminarId),
             debug: true
@@ -362,6 +414,11 @@ System.register("demo/client", ["index", "demo/api", "demo/ui"], function (expor
         execute: function () {
             ui = ui_1.getUIHandles();
             cache = new index_2.InMemoryCache();
+            ui.clearButton.onclick = () => {
+                ui.showLoader(false);
+                ui.showResult(null);
+                ui.setStatus('Not Loaded');
+            };
             ui.goButton.onclick = () => __awaiter(this, void 0, void 0, function* () {
                 console.log('Requesting data using strategy:', ui.strategy.value);
                 // Configure API
