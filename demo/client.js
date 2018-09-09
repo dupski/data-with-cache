@@ -48,29 +48,90 @@ System.register("backends/InMemoryCache", [], function (exports_2, context_2) {
         }
     };
 });
-System.register("backends/index", ["backends/InMemoryCache"], function (exports_3, context_3) {
+System.register("backends/IndexedDBCache", [], function (exports_3, context_3) {
     "use strict";
+    var IndexdDBCache;
     var __moduleName = context_3 && context_3.id;
+    return {
+        setters: [],
+        execute: function () {
+            IndexdDBCache = class IndexdDBCache {
+                constructor(dbName, storeName = 'dataWithCacheStore') {
+                    this.dbName = dbName;
+                    this.storeName = storeName;
+                    this.db = null;
+                    const idb = indexedDB.open(dbName, 1);
+                    idb.onupgradeneeded = () => {
+                        idb.result.createObjectStore(storeName);
+                    };
+                    idb.onsuccess = () => {
+                        this.db = idb.result;
+                    };
+                }
+                get(objectType, objectId) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return new Promise((resolve, reject) => {
+                            const tx = this.db.transaction(this.storeName, 'readonly');
+                            const store = tx.objectStore(this.storeName);
+                            const req = store.get(this.getKey(objectType, objectId));
+                            req.onsuccess = () => {
+                                resolve(req.result || null);
+                            };
+                            req.onerror = (err) => {
+                                reject(req.error);
+                            };
+                        });
+                    });
+                }
+                set(objectType, objectId, data) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return new Promise((resolve, reject) => {
+                            const tx = this.db.transaction(this.storeName, 'readwrite');
+                            const store = tx.objectStore(this.storeName);
+                            const req = store.put(data, this.getKey(objectType, objectId));
+                            req.onsuccess = () => {
+                                resolve();
+                            };
+                            req.onerror = (err) => {
+                                reject(req.error);
+                            };
+                        });
+                    });
+                }
+                getKey(objectType, objectId) {
+                    return objectType + '__' + objectId;
+                }
+            };
+            exports_3("IndexdDBCache", IndexdDBCache);
+        }
+    };
+});
+System.register("backends/index", ["backends/InMemoryCache", "backends/IndexedDBCache"], function (exports_4, context_4) {
+    "use strict";
+    var __moduleName = context_4 && context_4.id;
     function exportStar_1(m) {
         var exports = {};
         for (var n in m) {
             if (n !== "default") exports[n] = m[n];
         }
-        exports_3(exports);
+        exports_4(exports);
     }
     return {
         setters: [
             function (InMemoryCache_1_1) {
                 exportStar_1(InMemoryCache_1_1);
+            },
+            function (IndexedDBCache_1_1) {
+                exportStar_1(IndexedDBCache_1_1);
             }
         ],
         execute: function () {
         }
     };
 });
-System.register("utils", [], function (exports_4, context_4) {
+System.register("utils", [], function (exports_5, context_5) {
     "use strict";
-    var __moduleName = context_4 && context_4.id;
+    var __moduleName = context_5 && context_5.id;
     function withTimeout(timeout, promise, error) {
         return Promise.race([
             promise,
@@ -81,23 +142,23 @@ System.register("utils", [], function (exports_4, context_4) {
             }),
         ]);
     }
-    exports_4("withTimeout", withTimeout);
+    exports_5("withTimeout", withTimeout);
     function sleep(timeout) {
         return new Promise((resolve) => {
             setTimeout(resolve, timeout);
         });
     }
-    exports_4("sleep", sleep);
+    exports_5("sleep", sleep);
     return {
         setters: [],
         execute: function () {
         }
     };
 });
-System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
+System.register("DataWithCache", ["utils"], function (exports_6, context_6) {
     "use strict";
     var utils_1, requiredParams, DEFAULT_API_TIMEOUT, DEFAULT_CACHE_TIMEOUT, DataWithCache;
-    var __moduleName = context_5 && context_5.id;
+    var __moduleName = context_6 && context_6.id;
     return {
         setters: [
             function (utils_1_1) {
@@ -275,19 +336,19 @@ System.register("DataWithCache", ["utils"], function (exports_5, context_5) {
                     }
                 }
             };
-            exports_5("DataWithCache", DataWithCache);
+            exports_6("DataWithCache", DataWithCache);
         }
     };
 });
-System.register("index", ["backends/index", "DataWithCache"], function (exports_6, context_6) {
+System.register("index", ["backends/index", "DataWithCache"], function (exports_7, context_7) {
     "use strict";
-    var __moduleName = context_6 && context_6.id;
+    var __moduleName = context_7 && context_7.id;
     function exportStar_2(m) {
         var exports = {};
         for (var n in m) {
             if (n !== "default") exports[n] = m[n];
         }
-        exports_6(exports);
+        exports_7(exports);
     }
     return {
         setters: [
@@ -302,10 +363,10 @@ System.register("index", ["backends/index", "DataWithCache"], function (exports_
         }
     };
 });
-System.register("demo/api", ["utils"], function (exports_7, context_7) {
+System.register("demo/api", ["utils"], function (exports_8, context_8) {
     "use strict";
     var utils_2, params, currentOffset, DATA;
-    var __moduleName = context_7 && context_7.id;
+    var __moduleName = context_8 && context_8.id;
     function getSeminarAttendees(seminarId) {
         return __awaiter(this, void 0, void 0, function* () {
             yield utils_2.sleep(50);
@@ -328,7 +389,7 @@ System.register("demo/api", ["utils"], function (exports_7, context_7) {
             }
         });
     }
-    exports_7("getSeminarAttendees", getSeminarAttendees);
+    exports_8("getSeminarAttendees", getSeminarAttendees);
     return {
         setters: [
             function (utils_2_1) {
@@ -336,7 +397,7 @@ System.register("demo/api", ["utils"], function (exports_7, context_7) {
             }
         ],
         execute: function () {
-            exports_7("params", params = {
+            exports_8("params", params = {
                 apiResponseTime: 1000,
                 throwError: false,
             });
@@ -357,9 +418,9 @@ System.register("demo/api", ["utils"], function (exports_7, context_7) {
         }
     };
 });
-System.register("demo/ui", [], function (exports_8, context_8) {
+System.register("demo/ui", [], function (exports_9, context_9) {
     "use strict";
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_9 && context_9.id;
     function getUIHandles() {
         return {
             strategy: document.getElementById('strategy'),
@@ -397,17 +458,17 @@ System.register("demo/ui", [], function (exports_8, context_8) {
             },
         };
     }
-    exports_8("getUIHandles", getUIHandles);
+    exports_9("getUIHandles", getUIHandles);
     return {
         setters: [],
         execute: function () {
         }
     };
 });
-System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], function (exports_9, context_9) {
+System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], function (exports_10, context_10) {
     "use strict";
     var index_2, utils_3, api, ui_1, ui, cache;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_10 && context_10.id;
     function getSeminarAttendees(seminarId) {
         return new index_2.DataWithCache({
             strategy: ui.strategy.value,
@@ -437,6 +498,7 @@ System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], functi
         ],
         execute: function () {
             ui = ui_1.getUIHandles();
+            // const cache = new IndexdDBCache('app_cache');
             cache = new index_2.InMemoryCache();
             ui.goButton.onclick = () => __awaiter(this, void 0, void 0, function* () {
                 console.log('Requesting data using strategy:', ui.strategy.value);

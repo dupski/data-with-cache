@@ -1,11 +1,12 @@
 
-import { DataWithCache, InMemoryCache, Strategy } from '../index';
+import { DataWithCache, /*IndexdDBCache,*/ InMemoryCache, Strategy } from '../index';
 import { sleep } from '../utils';
 import * as api from './api';
 import { getUIHandles } from './ui';
 
 const ui = getUIHandles();
 
+// const cache = new IndexdDBCache('app_cache');
 const cache = new InMemoryCache();
 
 function getSeminarAttendees(seminarId: number) {
