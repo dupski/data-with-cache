@@ -3,7 +3,11 @@
   "version": "1.1.1",
   "description": "Backend-agnostic JS caching library that simplifies caching of application data",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dupski/data-with-cache.git"
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^23.3.2",
