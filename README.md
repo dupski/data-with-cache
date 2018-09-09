@@ -199,10 +199,6 @@ dataWithCache.onRefreshed = (data) => {
 const data = await dataWithCache.getData();  // Returns data (either from cache or API)
 ```
 
-# TODO
-
-* Make use of `navigator.onLine` (when in the browser)
-
 # Contributing
 
 PRs welcome!
