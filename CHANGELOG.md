@@ -1,5 +1,14 @@
 # data-with-cache Changelog
 
+## 1.2.0
+
+* Added `IndexedDBCache` backend
+* Added API documentation and examples
+
+## 1.1.2
+
+* Fix npm github link
+
 ## 1.1.1
 
 * Added `onRefreshing()` and `onRefreshed()` events.
