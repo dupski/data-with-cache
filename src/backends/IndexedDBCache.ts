@@ -1,6 +1,6 @@
 import { ICacheBackend } from '../types';
 
-export class IndexdDBCache implements ICacheBackend {
+export class IndexedDBCache implements ICacheBackend {
     db: IDBDatabase = null as any;
 
     constructor(

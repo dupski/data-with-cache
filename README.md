@@ -72,10 +72,10 @@ cache if the API does not respond within `apiTimeout` milliseconds or if the API
 responds with an error.
 
 ```ts
-import { DataWithCache, IndexdDBCache } from 'data-with-cache';
+import { DataWithCache, IndexedDBCache } from 'data-with-cache';
 import * as api from './api';
 
-const cache = new IndexdDBCache('app_cache');
+const cache = new IndexedDBCache('app_cache');
 
 export function getSeminarAttendees(seminarId: number) {
     return new DataWithCache<api.IAttendee[]>({
@@ -115,10 +115,10 @@ When the refresh is completed the `onRefreshed()` callback will be called with t
 most recent data, which is then displayed in the UI.
 
 ```ts
-import { DataWithCache, IndexdDBCache } from 'data-with-cache';
+import { DataWithCache, IndexedDBCache } from 'data-with-cache';
 import * as api from './api';
 
-const cache = new IndexdDBCache('app_cache');
+const cache = new IndexedDBCache('app_cache');
 
 export function getSeminarAttendees(seminarId: number) {
     return new DataWithCache<api.IAttendee[]>({

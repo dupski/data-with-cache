@@ -50,12 +50,12 @@ System.register("backends/InMemoryCache", [], function (exports_2, context_2) {
 });
 System.register("backends/IndexedDBCache", [], function (exports_3, context_3) {
     "use strict";
-    var IndexdDBCache;
+    var IndexedDBCache;
     var __moduleName = context_3 && context_3.id;
     return {
         setters: [],
         execute: function () {
-            IndexdDBCache = class IndexdDBCache {
+            IndexedDBCache = class IndexedDBCache {
                 constructor(dbName, storeName = 'dataWithCacheStore') {
                     this.dbName = dbName;
                     this.storeName = storeName;
@@ -102,17 +102,21 @@ System.register("backends/IndexedDBCache", [], function (exports_3, context_3) {
                     return objectType + '__' + objectId;
                 }
             };
-            exports_3("IndexdDBCache", IndexdDBCache);
+            exports_3("IndexedDBCache", IndexedDBCache);
         }
     };
 });
 System.register("backends/index", ["backends/InMemoryCache", "backends/IndexedDBCache"], function (exports_4, context_4) {
     "use strict";
     var __moduleName = context_4 && context_4.id;
+    var exportedNames_1 = {
+        "IndexedDBCache": true,
+        "IndexdDBCache": true
+    };
     function exportStar_1(m) {
         var exports = {};
         for (var n in m) {
-            if (n !== "default") exports[n] = m[n];
+            if (n !== "default" && !exportedNames_1.hasOwnProperty(n)) exports[n] = m[n];
         }
         exports_4(exports);
     }
@@ -122,7 +126,12 @@ System.register("backends/index", ["backends/InMemoryCache", "backends/IndexedDB
                 exportStar_1(InMemoryCache_1_1);
             },
             function (IndexedDBCache_1_1) {
-                exportStar_1(IndexedDBCache_1_1);
+                exports_4({
+                    "IndexedDBCache": IndexedDBCache_1_1["IndexedDBCache"]
+                });
+                exports_4({
+                    "IndexdDBCache": IndexedDBCache_1_1["IndexedDBCache"]
+                });
             }
         ],
         execute: function () {
@@ -498,7 +507,7 @@ System.register("demo/client", ["index", "utils", "demo/api", "demo/ui"], functi
         ],
         execute: function () {
             ui = ui_1.getUIHandles();
-            // const cache = new IndexdDBCache('app_cache');
+            // const cache = new IndexedDBCache('app_cache');
             cache = new index_2.InMemoryCache();
             ui.goButton.onclick = () => __awaiter(this, void 0, void 0, function* () {
                 console.log('Requesting data using strategy:', ui.strategy.value);

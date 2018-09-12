@@ -1,5 +1,10 @@
 # data-with-cache Changelog
 
+## 1.2.1
+
+* Fix incorrectly named `IndexdDBCache` -> `IndexedDBCache`
+* Old name preserved for compatibility. Will be removed in v2.0.0
+
 ## 1.2.0
 
 * Added `IndexedDBCache` backend
